@@ -11,3 +11,10 @@ Once that's done, follow these steps:
 1. Once that's done building up, open the terminal.
 1. Run `pwsh` to get a Powershell Core session started.
 1. Run the initialization script: `./run.ps1`.
+
+## Overview ##
+This project was implemented using an AWS Lambda Function sitting behind an Application Load Balancer.  The lambda function is hosted in a VPC, within a private subnet, and the ALB is hosted on two public subnets for internet access.  The VPC has an internet gateway, an Elastic IP address, and a NAT gateway in one of the public subnets, to give the private subnet internet access.
+
+
+The structure looks like this:
+![High Level Diagram](https://github.com/depinore2/petal_takehome/raw/main/docs/petal-high-level-diagram_2.png)
