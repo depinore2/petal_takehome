@@ -7,4 +7,7 @@ Please make sure you have [Visual Studio Code](https://code.visualstudio.com/) a
 
 Once that's done, follow these steps:
 1. Open the Command Palette (`CTRL+Shift+P` on Linux and Windows, `Cmd+Shift+P` on macOS).
-1. 
+1. Select "Reopen and Rebuild in Container".
+1. Once that's done building up, open the terminal.
+1. Type `pwsh` to get a Powershell Core session started.
+1. Run the initialization script: `./run.ps1`.
