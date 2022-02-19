@@ -70,7 +70,7 @@ In an ideal world, the deployment of the infrastructure and API source code woul
 
 The infrastructure would have been deployed using build and release automation on a build server, such as AWS CodeBuild.  From there, `terraform apply` would apply the appropriate infrastructural changes.
 
-The lambda function would have been held in a different repository, under the management of a development team.  The dev team would have followed a similar CI/CD pipeline, where they check their API source code in which triggers AWS CodeBuild.
+The source code for the API would have been held in a different repository, under the management of a development team.  The dev team would have followed a similar CI/CD pipeline, where they check their API source code in which triggers AWS CodeBuild.
 
 Because we'd be working with containers, CodeBuild would have taken the source code and packaged up all of the API artifacts into a Docker Container.  This container would have been published to AWS Elastic Container Registry.  Any additional artifacts not placed directly in a container would be pushed to S3.
 
