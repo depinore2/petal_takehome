@@ -113,6 +113,18 @@ resource "aws_route_table" "public" {
         Name = "public"
     }
 }
+resource "aws_route_table_association" "public1" {
+  subnet_id      = aws_subnet.public1.id
+  route_table_id = aws_route_table.public.id
+}
+resource "aws_route_table_association" "public2" {
+  subnet_id      = aws_subnet.public2.id
+  route_table_id = aws_route_table.public.id
+}
+resource "aws_route_table_association" "private1" {
+  subnet_id      = aws_subnet.private1.id
+  route_table_id = aws_route_table.private.id
+}
 
 # for the purposes of this demo, we will only need to send and receive web traffic
 # meaning we only need 80/443 in each direction, and ephemeral ports (1024-65535) in each direction.
@@ -258,6 +270,10 @@ resource "aws_iam_role" "iam_for_lambda" {
   ]
 }
 EOF
+}
+resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment_lambda_vpc_access_execution" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 locals {
     zipPath = "${abspath(path.module)}/artifacts/spac_lla.zip"
