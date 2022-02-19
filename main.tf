@@ -314,3 +314,10 @@ resource "aws_lb_target_group_attachment" "main" {
 }
 
 # === /COMPUTE ===
+
+
+# === OUTPUT ===
+output "alb_hostname" {
+    value = aws_lb.lambda_alb.dns_name
+}
+# === /OUTPUT ===

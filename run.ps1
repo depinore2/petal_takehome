@@ -30,4 +30,14 @@ zip -r $psscriptroot/artifacts/spac_lla.zip *
 cd $loc;
 
 # finally, apply terraform infra
-terraform apply -auto-approve -var region=$region;
+terraform apply -auto-approve -var region=$region
+$output = terraform output -json | convertfrom-json;
+
+$albHostname = $output.alb_hostname.value;
+
+Write-Host "`n`n`n"
+$message = Read-Host "Please provide a message to send to our SUPER COOL API"
+
+$response = invoke-webrequest -method POST -contenttype 'application/json' -body $(@{ data = $message } | convertto-json) "http://$albHostname"
+
+$response.Content;
