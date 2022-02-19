@@ -1,0 +1,11 @@
+Take-Home Notes
+
+1. Build docker environment with aws cli, terraform, powershell, and node 14 installed.
+2. Configure remote state in s3 bucket.
+3. Create vpc 10.0.0.0/16
+4. Create 2 public, 1 private subnet
+5. Create ALB in 2 public subnets
+6. Create NAT gateway in public subnet 1
+7. Create EIP & internet gateway
+8. create hello world lambda function in private subnet w/ roles
+9. Implement actual lambda functionality

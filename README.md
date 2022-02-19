@@ -11,4 +11,3 @@ Once that's done, follow these steps:
 1. Once that's done building up, open the terminal.
 1. Run `pwsh` to get a Powershell Core session started.
 1. Run the initialization script: `./run.ps1`.
-
