@@ -263,20 +263,25 @@ locals {
     zipPath = "${abspath(path.module)}/artifacts/spac_lla.zip"
 }
 resource "aws_lambda_function" "spac_lla" {
-  filename      = local.zipPath
-  function_name = "SPAC_LLA"
-  role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "index.handler"
+    filename      = local.zipPath
+    function_name = "SPAC_LLA"
+    role          = aws_iam_role.iam_for_lambda.arn
+    handler       = "index.handler"
 
-  source_code_hash = filebase64sha256(local.zipPath)
+    source_code_hash = filebase64sha256(local.zipPath)
 
-  runtime = "nodejs14.x"
+    runtime = "nodejs14.x"
 
-  environment {
-    variables = {
-      foo = "SPAC_LLA"
+    vpc_config {
+        subnet_ids         = [aws_subnet.private1.id]
+        security_group_ids = [aws_security_group.web_only.id]
     }
-  }
+
+    environment {
+        variables = {
+            foo = "SPAC_LLA"
+        }
+    }
 }
 
 resource "aws_lambda_permission" "alb" {
@@ -284,18 +289,11 @@ resource "aws_lambda_permission" "alb" {
     action = "lambda:InvokeFunction"
     function_name = aws_lambda_function.spac_lla.function_name
     principal = "elasticloadbalancing.amazonaws.com"
-    qualifier = aws_lambda_alias.demo_lambda.name
     source_arn = aws_lb_target_group.lambda.arn
 }
-resource "aws_lambda_alias" "demo_lambda" {
-    name             = "demolambda"
-    description      = "ALL CAPS service"
-    function_name    = aws_lambda_function.spac_lla.function_name
-    function_version = "$LATEST"
-}
-resource aws_lb_target_group_attachment main {
+resource "aws_lb_target_group_attachment" "main" {
     target_group_arn = aws_lb_target_group.lambda.arn
-    target_id = aws_lambda_alias.demo_lambda.arn
+    target_id = aws_lambda_function.spac_lla.arn
     depends_on = [ aws_lambda_permission.alb ]
 }
 
