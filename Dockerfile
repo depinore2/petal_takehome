@@ -14,3 +14,9 @@ RUN apt-get update && apt-get install terraform -y
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt install nodejs -y
+
+# install aws cli
+RUN apt-get install unzip -y;
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && rm awscliv2.zip
+RUN ./aws/install
+RUN rm -rf ./aws
