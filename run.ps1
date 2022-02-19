@@ -38,6 +38,7 @@ $albHostname = $output.alb_hostname.value;
 Write-Host "`n`n`n"
 $message = Read-Host "Please provide a message to send to our SUPER COOL API"
 
-$response = invoke-webrequest -method POST -contenttype 'application/json' -body $(@{ data = $message } | convertto-json) "http://$albHostname"
+$requestBody = @{ data = $message } | convertto-json -Compress
+$response = invoke-webrequest -method POST -contenttype 'application/json' -body $requestBody "http://$albHostname"
 
-$response.Content;
+Write-Host "$requestBody --> $($response.Content)";
