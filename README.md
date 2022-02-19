@@ -13,6 +13,7 @@ Once that's done, follow these steps:
 1. Run the initialization script: `./run.ps1`.
 1. You will be asked for AWS API keys in order to deploy the terraform resources.
 1. Once all is provisioned, the script will go through a routine where it asks you for a string and interacts with the API on your behalf.
+1. After you're done with everything, please run `./destroy.ps1` to tear the AWS environment down.
 
 ## Overview ##
 This project was implemented using an AWS Lambda Function sitting behind an Application Load Balancer.  The "SPAC_LLA" lambda function is hosted in a VPC, within a private subnet, and the ALB is hosted on two public subnets for internet access.  The VPC has an internet gateway, an Elastic IP address, and a NAT gateway in one of the public subnets, to give the private subnet internet access.
