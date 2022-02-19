@@ -24,7 +24,7 @@ variable "region" { type = string }
 
 
 
-# === VPC ===
+# === NETWORK ===
 locals {
     vpc_cidr = "10.0.0.0/16"
     public1_cidr = "10.0.1.0/24"
@@ -207,10 +207,96 @@ resource "aws_security_group" "web_only" {
         Name = "demo_web_only"
     }
 }
-# === /VPC ===
+# === /NETWORK ===
 
 
 
-# === EC2 ===
+# === COMPUTE ===
+resource "aws_lb" "lambda_alb" {
+    name = "demoLambdaAlb"
+    internal = false
+    load_balancer_type = "application"
+    security_groups = [aws_security_group.web_only.id]
+    subnets = [aws_subnet.public1.id, aws_subnet.public2.id]
 
-# === /EC2 ===
+    tags = {
+        Name = "demo_lambda_alb"
+    }
+}
+resource "aws_lb_target_group" "lambda" {
+    name = "lambdatg"
+    target_type = "lambda"
+    port = 80
+    protocol = "HTTP"
+    vpc_id = aws_vpc.demo.id
+}
+resource "aws_lb_listener" "lambda" {
+    load_balancer_arn = aws_lb.lambda_alb.arn
+    port              = "80"
+    protocol          = "HTTP"
+
+    default_action {
+        type             = "forward"
+        target_group_arn = aws_lb_target_group.lambda.arn
+    }
+}
+resource "aws_iam_role" "iam_for_lambda" {
+  name = "iam_for_lambda"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+locals {
+    zipPath = "${abspath(path.module)}/artifacts/spac_lla.zip"
+}
+resource "aws_lambda_function" "spac_lla" {
+  filename      = local.zipPath
+  function_name = "SPAC_LLA"
+  role          = aws_iam_role.iam_for_lambda.arn
+  handler       = "index.handler"
+
+  source_code_hash = filebase64sha256(local.zipPath)
+
+  runtime = "nodejs14.x"
+
+  environment {
+    variables = {
+      foo = "SPAC_LLA"
+    }
+  }
+}
+
+resource "aws_lambda_permission" "alb" {
+    statement_id = "AllowExecutionFromALB"
+    action = "lambda:InvokeFunction"
+    function_name = aws_lambda_function.spac_lla.function_name
+    principal = "elasticloadbalancing.amazonaws.com"
+    qualifier = aws_lambda_alias.demo_lambda.name
+    source_arn = aws_lb_target_group.lambda.arn
+}
+resource "aws_lambda_alias" "demo_lambda" {
+    name             = "demolambda"
+    description      = "ALL CAPS service"
+    function_name    = aws_lambda_function.spac_lla.function_name
+    function_version = "$LATEST"
+}
+resource aws_lb_target_group_attachment main {
+    target_group_arn = aws_lb_target_group.lambda.arn
+    target_id = aws_lambda_alias.demo_lambda.arn
+    depends_on = [ aws_lambda_permission.alb ]
+}
+
+# === /COMPUTE ===

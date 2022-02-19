@@ -3,6 +3,7 @@ RUN apt-get update
 
 # install common tooling
 RUN apt-get install git -y;
+RUN apt-get install zip -y;
 
 # install terraform
 RUN apt-get install -y gnupg software-properties-common curl

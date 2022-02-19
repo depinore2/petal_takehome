@@ -16,6 +16,18 @@ function Initialize-Remotebucket() {
     }
 }
 
+# configure aws and remote state bucket
 aws configure;
 Initialize-RemoteBucket;
 terraform init -backend-config "bucket=$bucketName" -backend-config "region=$region"
+
+# initialize lambda source code and produce a deployment package
+$loc = get-location;
+cd $psscriptroot/src;
+npm i;
+mkdir -p $psscriptroot/artifacts;
+zip -r $psscriptroot/artifacts/spac_lla.zip *
+cd $loc;
+
+# finally, apply terraform infra
+terraform apply -auto-approve -var region=$region;
